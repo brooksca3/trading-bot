@@ -45,6 +45,15 @@ public class Bot {
 
     public static int orderid = 0;
     public static int bonds = 0;
+    public static open =true;
+
+    List<Integer> BOND = new ArrayList<Integer>();
+    List<Integer> VALBZ = new ArrayList<Integer>();
+    List<Integer> VALE = new ArrayList<Integer>();
+    List<Integer> GS = new ArrayList<Integer>();
+    List<Integer> MS = new ArrayList<Integer>();
+    List<Integer> WFC = new ArrayList<Integer>();
+    List<Integer> XLF = new ArrayList<Integer>();
 
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
@@ -81,9 +90,98 @@ public class Bot {
         }
     }
 
-    //public static void penny() {
+    // get info
+    public static void getInfo(BufferedReader read) {
+        System.err.pintln("Getting market info.");
+        int counter = 0;
+        for (int i = 0; i < 500; i++) {
+            String line = read.readLine().trim();
+            System.err.printf("Info: %s\n", line);
+            String[] info = line.split(" ");
+            if (info[0].equals("CLOSE")) {
+                open = false;
+                System.err.println("Market is closed".);
+                return;
+            }
+            if (line == null)
+                continue;
+            if (info[0].equals("TRADE")) {
+                if (info[1].equals("BOND"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+                else if (info[1].equals("VALBZ"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+                else if (info[1].equals("VALE"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+                else if (info[1].equals("GS"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+                else if (info[1].equals("MS"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+                else if (info[1].equals("WFC"))
+                    VALBZ.add(Integer.parseInt(info[2]));
+            }
+            Thread.sleep(1);
+        }
+    }
 
-    //}
+    // calculate average
+    public double avg(List<Integer> prices, int lastN) {
+        int sum = 0;
+        for (int i = prices.length - 1; i > prices.length - lastN - 1; i--) {
+            sum += prices.get(i);
+        }
+        return sum / lastN;
+    }
+
+
+    // adr pair trading
+    public static void tradeADR(PrintWriter write) {
+        int SIZE = 10;
+        if (VALE.size() < SIZE || VALBZ.size() < SIZE)
+            return;
+        double ADR = avg(VALE, SIZE);
+        double REG = avg(VALBZ, SIZE);
+        double diff = REG - ADR;
+        if (diff >= 3) {
+            System.err.println("Buying ADR / selling regular");
+            write.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
+            write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
+            write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
+        } else if (diff <= -3) {
+            System.err.println("Buying ADR / selling regular");
+            write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
+            write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
+            write.println("ADD " + orderid++ + " VALE SELL " + (SELL - 1) + " " + SIZE);
+        }
+    }
+
+    // etf arbitrage
+
+    public static void tradeETF(PrintWriter write) {
+        int SIZE = 20;
+        double xlfP = avg(XLF, SIZE);
+        double bondP = avg(BOND, SIZE);
+        double gsP = avg(GS, SIZE);
+        double msP = avg(MS, SIZE);
+        double wfcP = avg(WFC, SIZE);
+        double diff = (10 * xlfP) - (3 * bondP + 2 * gsP + 3 * msP + 2 * wfcP);
+
+        if (diff > 102) {
+            write.println("ADD " + orderid++ + " BOND BUY " + (bondP + 1) + " " + 30);
+            write.println("ADD " + orderid++ + " GS BUY " + (gsP + 1) + " " + 20);
+            write.println("ADD " + orderid++ + " MS BUY " + (msP + 1) + " " + 30);
+            write.println("ADD " + orderid++ + " WFC BUY " + (wfcP + 1) + " " + 20);
+            write.println("CONVERT " + orderid++ + " XLF BUY " + 100);
+            write.println("ADD " + orderid++ + " XLF SELL " + (xlfP - 1) + " " + 100);
+        } else if (diff < -102) {
+            write.println("ADD " + orderid++ + " XLF BUY " + (xlfP + 1) + " " + 100);
+            write.println("CONVERT " + orderid++ + " XLF SELL " + 100);
+            write.println("ADD " + orderid++ + " BOND SELL " + (bondP - 1) + " " + 30);
+            write.println("ADD " + orderid++ + " GS SELL " + (gsP - 1) + " " + 20);
+            write.println("ADD " + orderid++ + " MS SELL " + (msP - 1) + " " + 30);
+            write.println("ADD " + orderid++ + " WFC SELL " + (wfcP - 1) + " " + 20);
+        }
+
+    }
 
 
 }
