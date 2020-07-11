@@ -80,17 +80,14 @@ public class Bot {
             bonds = 0;
             while (true) {
                 getInfo(from_exchange);
-<<<<<<< HEAD
                 tradeADR(to_exchange);
                 tradeETF(to_exchange);
-=======
                 if (open) {
-                    tradeADR();
-                    tradeETF();
+                    tradeADR(to_exchange);
+                    tradeETF(to_exchange);
                 } else {
                     rejoin(to_exchange, from_exchange);
                 }
->>>>>>> b45a9b52253bb20721175b1df39af88fc273dc97
 
                 /*
                  reply = from_exchange.readLine().trim();
@@ -171,7 +168,7 @@ public class Bot {
     }
 
     // waiting for market to open
-    public static void rejoin(PrintWriter write, BufferReader read) {
+    public static void rejoin(PrintWriter write, BufferedReader read) {
         while (!open) {
             write.println("HELLO PROSPECTAVENUE");
             if (read.readLine().trim().split(" ")[0].equals("HELLO"))
@@ -190,9 +187,9 @@ public class Bot {
         double diff = REG - ADR;
         if (diff >= 3) {
             System.err.println("Buying ADR / selling regular");
-            write.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALE BUY " + (REG + 1) + " " + SIZE);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
-            write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALBZ SELL " + (ADR - 1) + " " + SIZE);
         } else if (diff <= -3) {
             System.err.println("Buying ADR / selling regular");
             write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
@@ -205,11 +202,8 @@ public class Bot {
 
     public static void tradeETF(PrintWriter write) {
         int SIZE = 20;
-<<<<<<< HEAD
 	if (WFC.size() < SIZE || BOND.size() < SIZE)
-=======
         if (WFC.size() < SIZE || BOND.size() < SIZE)
->>>>>>> b45a9b52253bb20721175b1df39af88fc273dc97
             return;
         if (GS.size() < SIZE || MS.size() < SIZE)
             return;
