@@ -105,10 +105,10 @@ public class Bot {
 		}
 >>>>>>> 130815863396ae832afef5b078f9cc8fdce851c1
                 if (bonds < 100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
+                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + 10);
 		}
 		if (bonds > -100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + (29 + bonds));
+                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + 10);
                 }
 		System.out.println(bonds);
                 String ans = from_exchange.readLine().trim();
