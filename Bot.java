@@ -81,8 +81,8 @@ public class Bot {
             while (true) {
                 getInfo(from_exchange);
                 if (open) {
-                    tradeADR();
-                    tradeETF();
+                    tradeADR(to_exchange);
+                    tradeETF(to_exchange);
                 } else {
                     rejoin(to_exchange, from_exchange);
                 }
@@ -156,7 +156,7 @@ public class Bot {
         }
     }
 
-    // calculate average
+    // calculate average of 'lastN' items in list
     public static double avg(ArrayList<Integer> prices, int lastN) {
         int sum = 0;
         for (int i = prices.size() - 1; i > prices.size() - lastN - 1; i--) {
@@ -166,7 +166,7 @@ public class Bot {
     }
 
     // waiting for market to open
-    public static void rejoin(PrintWriter write, BufferReader read) {
+    public static void rejoin(PrintWriter write, BufferedReader read) {
         while (!open) {
             write.println("HELLO PROSPECTAVENUE");
             if (read.readLine().trim().split(" ")[0].equals("HELLO"))
@@ -183,12 +183,12 @@ public class Bot {
         double ADR = avg(VALE, SIZE);
         double REG = avg(VALBZ, SIZE);
         double diff = REG - ADR;
-        if (diff >= 3) {
+        if (diff >= 4) {
             System.err.println("Buying ADR / selling regular");
             write.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
             write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
-        } else if (diff <= -3) {
+        } else if (diff <= -4) {
             System.err.println("Buying ADR / selling regular");
             write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
             write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
