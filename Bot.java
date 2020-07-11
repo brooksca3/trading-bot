@@ -168,7 +168,7 @@ public class Bot {
     }
 
     // waiting for market to open
-    public static void rejoin(PrintWriter write, BufferedReader read) {
+    public static void rejoin(PrintWriter write, BufferedReader read) throws IOException {
         while (!open) {
             write.println("HELLO PROSPECTAVENUE");
             if (read.readLine().trim().split(" ")[0].equals("HELLO"))
@@ -187,14 +187,14 @@ public class Bot {
         double diff = REG - ADR;
         if (diff >= 4) {
             System.err.println("Buying ADR / selling regular");
-            write.println("ADD " + orderid++ + " VALE BUY " + ((int) ADR + 1) + " " + SIZE / 2 + 1);
+            write.println("ADD " + orderid++ + " VALE BUY " + ((int) ADR + 1) + " " + SIZE / 2 + 3);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
-            write.println("ADD " + orderid++ + " VALBZ SELL " + ((int) REG - 1) + " " + SIZE / 2 + 1);
+            write.println("ADD " + orderid++ + " VALBZ SELL " + ((int) REG - 1) + " " + SIZE / 2 + 3);
         } else if (diff <= -4) {
             System.err.println("Buying regular / selling ADR");
-            write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 1);
+            write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 3);
             write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
-            write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 1);
+            write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 3);
         }
     }
 
