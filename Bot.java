@@ -73,12 +73,18 @@ public class Bot {
             to_exchange.println(("HELLO " + config.team_name).toUpperCase());
             String reply = from_exchange.readLine().trim();
             System.err.printf("The exchange replied: %s\n", reply);
+<<<<<<< HEAD
             Thread.sleep(5);
 
+=======
+	    
+>>>>>>> 130815863396ae832afef5b078f9cc8fdce851c1
             to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
+	    bonds = 25;
             while (true) {
 
                 reply = from_exchange.readLine().trim();
+<<<<<<< HEAD
                 Thread.sleep(5);
                 String[] line = reply.split(" ");
                 System.out.println(line[0]);
@@ -88,11 +94,23 @@ public class Bot {
                 if (line[0].equals("FILL") && line[3].equals("SELL")) {
                     bonds -= Integer.parseInt(line[5]);
                 }
+=======
+		String[] line = reply.split(" ");
+		System.out.println(line[0]);
+		if (line[0].equals("FILL") && line[3].equals("BUY")) {
+		    bonds += Integer.parseInt(line[5]);
+		}
+		if (line[0].equals("FILL") && line[3].equals("SELL")) {
+		    bonds -= Integer.parseInt(line[5]);
+		}
+>>>>>>> 130815863396ae832afef5b078f9cc8fdce851c1
                 if (bonds < 100) {
                     to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
-                } else if (bonds > -100) {
+		}
+		if (bonds > -100) {
                     to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + (29 + bonds));
                 }
+		System.out.println(bonds);
                 String ans = from_exchange.readLine().trim();
                 System.err.printf("The exchange replied: %s\n", ans);
                 Thread.sleep(10);
