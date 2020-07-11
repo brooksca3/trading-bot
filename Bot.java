@@ -49,13 +49,13 @@ public class Bot {
     public static int bonds = 0;
     public static boolean open = true;
 
-    static ArrayList<Integer> BOND = new ArrayList<Integer>();
-    static ArrayList<Integer> VALBZ = new ArrayList<Integer>();
-    static ArrayList<Integer> VALE = new ArrayList<Integer>();
-    static ArrayList<Integer> GS = new ArrayList<Integer>();
-    static ArrayList<Integer> MS = new ArrayList<Integer>();
-    static ArrayList<Integer> WFC = new ArrayList<Integer>();
-    static ArrayList<Integer> XLF = new ArrayList<Integer>();
+    static ArrayList<Double> BOND = new ArrayList<Double>();
+    static ArrayList<Double> VALBZ = new ArrayList<Double>();
+    static ArrayList<Double> VALE = new ArrayList<Double>();
+    static ArrayList<Double> GS = new ArrayList<Double>();
+    static ArrayList<Double> MS = new ArrayList<Double>();
+    static ArrayList<Double> WFC = new ArrayList<Double>();
+    static ArrayList<Double> XLF = new ArrayList<Double>();
 
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
@@ -142,29 +142,29 @@ public class Bot {
                 continue;
             if (info[0].equals("TRADE")) {
                 if (info[1].equals("BOND"))
-                    BOND.add(Integer.parseInt(info[2]));
+                    BOND.add(Double.parseDouble(info[2]));
                 else if (info[1].equals("VALBZ"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    VALBZ.add(Double.parseDouble(info[2]));
                 else if (info[1].equals("VALE"))
-                    VALE.add(Integer.parseInt(info[2]));
+                    VALE.add(Double.parseDouble(info[2]));
                 else if (info[1].equals("GS"))
-                    GS.add(Integer.parseInt(info[2]));
+                    GS.add(Double.parseDouble(info[2]));
                 else if (info[1].equals("MS"))
-                    MS.add(Integer.parseInt(info[2]));
+                    MS.add(Double.parseDouble(info[2]));
                 else if (info[1].equals("WFC"))
-                    WFC.add(Integer.parseInt(info[2]));
+                    WFC.add(Double.parseDouble(info[2]));
             }
             Thread.sleep(1);
         }
     }
 
     // calculate average of 'lastN' items in list
-    public static double avg(ArrayList<Integer> prices, int lastN) {
-        int sum = 0;
+    public static double avg(ArrayList<Double> prices, int lastN) {
+        double sum = 0;
         for (int i = prices.size() - 1; i > prices.size() - lastN - 1; i--) {
             sum += prices.get(i);
         }
-        return (sum / lastN);
+        return (sum / (double) lastN);
     }
 
     // waiting for market to open
@@ -187,20 +187,21 @@ public class Bot {
         double diff = REG - ADR;
         if (diff >= 4) {
             System.err.println("Buying ADR / selling regular");
-            write.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALE BUY " + ((int) ADR + 1) + " " + SIZE / 2 + 1);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
-            write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALBZ SELL " + ((int) REG - 1) + " " + SIZE / 2 + 1);
         } else if (diff <= -4) {
             System.err.println("Buying regular / selling ADR");
-            write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 1);
             write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
-            write.println("ADD " + orderid++ + " VALE SELL " + (ADR - 1) + " " + SIZE);
+            write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 1);
         }
     }
 
     // etf arbitrage
 
     public static void tradeETF(PrintWriter write) {
+
         int SIZE = 20;
         if (WFC.size() < SIZE || BOND.size() < SIZE)
             return;
@@ -215,24 +216,23 @@ public class Bot {
         double wfcP = avg(WFC, SIZE);
         double diff = (10 * xlfP) - (3 * bondP + 2 * gsP + 3 * msP + 2 * wfcP);
 
-        if (diff > 30) {
-            write.println("ADD " + orderid++ + " BOND BUY " + (bondP + 1) + " " + 30);
-            write.println("ADD " + orderid++ + " GS BUY " + (gsP + 1) + " " + 20);
-            write.println("ADD " + orderid++ + " MS BUY " + (msP + 1) + " " + 30);
-            write.println("ADD " + orderid++ + " WFC BUY " + (wfcP + 1) + " " + 20);
+        if (diff > 35) {
+            write.println("ADD " + orderid++ + " BOND BUY " + ((int) bondP + 1) + " " + 30);
+            write.println("ADD " + orderid++ + " GS BUY " + ((int) gsP + 1) + " " + 20);
+            write.println("ADD " + orderid++ + " MS BUY " + ((int) msP + 1) + " " + 30);
+            write.println("ADD " + orderid++ + " WFC BUY " + ((int) wfcP + 1) + " " + 20);
             write.println("CONVERT " + orderid++ + " XLF BUY " + 100);
-            write.println("ADD " + orderid++ + " XLF SELL " + (xlfP - 1) + " " + 100);
-        } else if (diff < -30) {
-            write.println("ADD " + orderid++ + " XLF BUY " + (xlfP + 1) + " " + 100);
+            write.println("ADD " + orderid++ + " XLF SELL " + ((int) xlfP - 1) + " " + 100);
+        } else if (diff < -35) {
+            write.println("ADD " + orderid++ + " XLF BUY " + ((int) xlfP + 1) + " " + 100);
             write.println("CONVERT " + orderid++ + " XLF SELL " + 100);
-            write.println("ADD " + orderid++ + " BOND SELL " + (bondP - 1) + " " + 30);
-            write.println("ADD " + orderid++ + " GS SELL " + (gsP - 1) + " " + 20);
-            write.println("ADD " + orderid++ + " MS SELL " + (msP - 1) + " " + 30);
-            write.println("ADD " + orderid++ + " WFC SELL " + (wfcP - 1) + " " + 20);
+            write.println("ADD " + orderid++ + " BOND SELL " + ((int) bondP - 1) + " " + 30);
+            write.println("ADD " + orderid++ + " GS SELL " + ((int) gsP - 1) + " " + 20);
+            write.println("ADD " + orderid++ + " MS SELL " + ((int) msP - 1) + " " + 30);
+            write.println("ADD " + orderid++ + " WFC SELL " + ((int) wfcP - 1) + " " + 20);
         }
 
     }
-
 
 }
 
