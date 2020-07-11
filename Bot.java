@@ -79,9 +79,13 @@ public class Bot {
             //to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
             bonds = 0;
             while (true) {
-                getInfo();
-                tradeADR;
-                tradeETF;
+                getInfo(from_exchange);
+                if (open) {
+                    tradeADR();
+                    tradeETF();
+                } else {
+                    rejoin(to_exchange, from_exchange);
+                }
 
                 /**
                  reply = from_exchange.readLine().trim();
@@ -161,6 +165,15 @@ public class Bot {
         return (sum / lastN);
     }
 
+    // waiting for market to open
+    public static void rejoin(PrintWriter write, BufferReader read) {
+        while (!open) {
+            write.println("HELLO PROSPECTAVENUE");
+            if (read.readLine().trim().split(" ")[0].equals("HELLO"))
+                open = true;
+        }
+    }
+
 
     // adr pair trading
     public static void tradeADR(PrintWriter write) {
@@ -187,6 +200,12 @@ public class Bot {
 
     public static void tradeETF(PrintWriter write) {
         int SIZE = 20;
+        if (WFC.size() < SIZE || BOND.size() < SIZE)
+            return;
+        if (GS.size() < SIZE || MS.size() < SIZE)
+            return;
+        if (XLF.size() < SIZE)
+            return;
         double xlfP = avg(XLF, SIZE);
         double bondP = avg(BOND, SIZE);
         double gsP = avg(GS, SIZE);
