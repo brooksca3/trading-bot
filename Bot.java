@@ -60,7 +60,7 @@ public class Bot {
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
            bot is connecting to the prod or test exchange. Be careful with this switch! */
-        Configuration config = new Configuration(false);
+        Configuration config = new Configuration(true);
         try {
             Socket skt = new Socket(config.exchange_name(), config.port());
             BufferedReader from_exchange = new BufferedReader(new InputStreamReader(skt.getInputStream()));
@@ -79,11 +79,11 @@ public class Bot {
             //to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
             bonds = 0;
             while (true) {
-                getInfo();
-                tradeADR;
-                tradeETF;
+                getInfo(from_exchange);
+                tradeADR(to_exchange);
+                tradeETF(to_exchange);
 
-                /**
+                /*
                  reply = from_exchange.readLine().trim();
                  Thread.sleep(5);
                  String[] line = reply.split(" ");
@@ -187,6 +187,12 @@ public class Bot {
 
     public static void tradeETF(PrintWriter write) {
         int SIZE = 20;
+	if (WFC.size() < SIZE || BOND.size() < SIZE)
+            return;
+        if (GS.size() < SIZE || MS.size() < SIZE)
+            return;
+        if (XLF.size() < SIZE)
+            return;
         double xlfP = avg(XLF, SIZE);
         double bondP = avg(BOND, SIZE);
         double gsP = avg(GS, SIZE);
