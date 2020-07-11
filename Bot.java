@@ -19,13 +19,15 @@ class Configuration {
     */
     final Integer test_exchange_kind = 2;
     /* replace REPLACEME with your team name! */
-    final String  team_name          = "PROSPECT AVENUE";
+    final String  team_name          = "PROSPECTAVENUE";
 
     Configuration(Boolean test_mode) {
         if(!test_mode) {
+	    /* If we pass in false, we're putting our bot into PRODUCTION */
             exchange_port = 20000;
             exchange_name = "production";
         } else {
+	    /* If we pass in true, we're TESTING */
             exchange_port = 20000 + test_exchange_kind;
             exchange_name = "test-exch-" + this.team_name;
         }
