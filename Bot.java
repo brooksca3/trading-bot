@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 
 class Configuration {
     String exchange_name;
@@ -46,15 +45,15 @@ public class Bot {
 
     public static int orderid = 0;
     public static int bonds = 0;
-    public static open =true;
+    public static boolean open = true;
 
-    List<Integer> BOND = new ArrayList<Integer>();
-    List<Integer> VALBZ = new ArrayList<Integer>();
-    List<Integer> VALE = new ArrayList<Integer>();
-    List<Integer> GS = new ArrayList<Integer>();
-    List<Integer> MS = new ArrayList<Integer>();
-    List<Integer> WFC = new ArrayList<Integer>();
-    List<Integer> XLF = new ArrayList<Integer>();
+    static List<Integer> BOND = new ArrayList<Integer>();
+    static List<Integer> VALBZ = new ArrayList<Integer>();
+    static List<Integer> VALE = new ArrayList<Integer>();
+    static List<Integer> GS = new ArrayList<Integer>();
+    static List<Integer> MS = new ArrayList<Integer>();
+    static List<Integer> WFC = new ArrayList<Integer>();
+    static List<Integer> XLF = new ArrayList<Integer>();
 
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
@@ -62,8 +61,8 @@ public class Bot {
         Configuration config = new Configuration(true);
         try {
             Socket skt = new Socket(config.exchange_name(), config.port());
-            BufferedReader from_exchange = new BufferedReader(new InputStreamReader(skt.getInputStream()));
-            PrintWriter to_exchange = new PrintWriter(skt.getOutputStream(), true);
+            static BufferedReader from_exchange = new BufferedReader(new InputStreamReader(skt.getInputStream()));
+            static PrintWriter to_exchange = new PrintWriter(skt.getOutputStream(), true);
 
             /*
               A common mistake people make is to to_exchange.println() > 1
@@ -74,21 +73,21 @@ public class Bot {
             to_exchange.println(("HELLO " + config.team_name).toUpperCase());
             String reply = from_exchange.readLine().trim();
             System.err.printf("The exchange replied: %s\n", reply);
-	    Thread.sleep(5);
-	    
+            Thread.sleep(5);
+
             to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
             while (true) {
 
                 reply = from_exchange.readLine().trim();
-		Thread.sleep(5);
-		String[] line = reply.split(" ");
-		System.out.println(line[0]);
-		if (line[0].equals("FILL") && line[3].equals("BUY")) {
-		    bonds += Integer.parseInt(line[5]);
-		}
-		if (line[0].equals("FILL") && line[3].equals("SELL")) {
-		    bonds -= Integer.parseInt(line[5]);
-		}
+                Thread.sleep(5);
+                String[] line = reply.split(" ");
+                System.out.println(line[0]);
+                if (line[0].equals("FILL") && line[3].equals("BUY")) {
+                    bonds += Integer.parseInt(line[5]);
+                }
+                if (line[0].equals("FILL") && line[3].equals("SELL")) {
+                    bonds -= Integer.parseInt(line[5]);
+                }
                 if (bonds < 100) {
                     to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
                 } else if (bonds > -100) {
@@ -113,7 +112,7 @@ public class Bot {
             String[] info = line.split(" ");
             if (info[0].equals("CLOSE")) {
                 open = false;
-                System.err.println("Market is closed".);
+                System.err.println("Market is closed.");
                 return;
             }
             if (line == null)
@@ -137,12 +136,12 @@ public class Bot {
     }
 
     // calculate average
-    public double avg(List<Integer> prices, int lastN) {
+    public double avg(ArrayList<Integer> prices, int lastN) {
         int sum = 0;
         for (int i = prices.length - 1; i > prices.length - lastN - 1; i--) {
             sum += prices.get(i);
         }
-        return sum / lastN;
+        return (sum / lastN);
     }
 
 
@@ -156,9 +155,9 @@ public class Bot {
         double diff = REG - ADR;
         if (diff >= 3) {
             System.err.println("Buying ADR / selling regular");
-            write.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
-            write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
-            write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
+            from_exchange.println("ADD " + orderid++ + " VALE BUY " + (ADR + 1) + " " + SIZE);
+            from_exchange.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
+            from_exchange.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
         } else if (diff <= -3) {
             System.err.println("Buying ADR / selling regular");
             write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
