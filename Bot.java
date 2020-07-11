@@ -190,49 +190,50 @@ public class Bot {
             write.println("ADD " + orderid++ + " VALE BUY " + ((int) ADR + 1) + " " + SIZE / 2 + 1);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
             write.println("ADD " + orderid++ + " VALBZ SELL " + ((int) REG - 1) + " " + SIZE / 2 + 1);
-        } else if (diff <= -4) {
-            System.err.println("Buying regular / selling ADR");
-            write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 1);
-            write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
-            write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 1);
-        }
-    }
-
-    // etf arbitrage
-
-    public static void tradeETF(PrintWriter write) {
-
-        int SIZE = 20;
-        if (WFC.size() < SIZE || BOND.size() < SIZE)
-            return;
-        if (GS.size() < SIZE || MS.size() < SIZE)
-            return;
-        if (XLF.size() < SIZE)
-            return;
-        double xlfP = avg(XLF, SIZE);
-        double bondP = avg(BOND, SIZE);
-        double gsP = avg(GS, SIZE);
-        double msP = avg(MS, SIZE);
-        double wfcP = avg(WFC, SIZE);
-        double diff = (10 * xlfP) - (3 * bondP + 2 * gsP + 3 * msP + 2 * wfcP);
-
-        if (diff > 35) {
-            write.println("ADD " + orderid++ + " BOND BUY " + ((int) bondP + 1) + " " + 30);
-            write.println("ADD " + orderid++ + " GS BUY " + ((int) gsP + 1) + " " + 20);
-            write.println("ADD " + orderid++ + " MS BUY " + ((int) msP + 1) + " " + 30);
-            write.println("ADD " + orderid++ + " WFC BUY " + ((int) wfcP + 1) + " " + 20);
-            write.println("CONVERT " + orderid++ + " XLF BUY " + 100);
-            write.println("ADD " + orderid++ + " XLF SELL " + ((int) xlfP - 1) + " " + 100);
-        } else if (diff < -35) {
-            write.println("ADD " + orderid++ + " XLF BUY " + ((int) xlfP + 1) + " " + 100);
-            write.println("CONVERT " + orderid++ + " XLF SELL " + 100);
-            write.println("ADD " + orderid++ + " BOND SELL " + ((int) bondP - 1) + " " + 30);
-            write.println("ADD " + orderid++ + " GS SELL " + ((int) gsP - 1) + " " + 20);
-            write.println("ADD " + orderid++ + " MS SELL " + ((int) msP - 1) + " " + 30);
-            write.println("ADD " + orderid++ + " WFC SELL " + ((int) wfcP - 1) + " " + 20);
+            /**  } else if (diff <= -4) {
+             System.err.println("Buying regular / selling ADR");
+             write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 1);
+             write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
+             write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 1);
+             }
+             */
         }
 
-    }
+        // etf arbitrage
 
-}
+        public static void tradeETF (PrintWriter write){
+
+            int SIZE = 20;
+            if (WFC.size() < SIZE || BOND.size() < SIZE)
+                return;
+            if (GS.size() < SIZE || MS.size() < SIZE)
+                return;
+            if (XLF.size() < SIZE)
+                return;
+            double xlfP = avg(XLF, SIZE);
+            double bondP = avg(BOND, SIZE);
+            double gsP = avg(GS, SIZE);
+            double msP = avg(MS, SIZE);
+            double wfcP = avg(WFC, SIZE);
+            double diff = (10 * xlfP) - (3 * bondP + 2 * gsP + 3 * msP + 2 * wfcP);
+
+            if (diff > 35) {
+                write.println("ADD " + orderid++ + " BOND BUY " + ((int) bondP + 1) + " " + 30);
+                write.println("ADD " + orderid++ + " GS BUY " + ((int) gsP + 1) + " " + 20);
+                write.println("ADD " + orderid++ + " MS BUY " + ((int) msP + 1) + " " + 30);
+                write.println("ADD " + orderid++ + " WFC BUY " + ((int) wfcP + 1) + " " + 20);
+                write.println("CONVERT " + orderid++ + " XLF BUY " + 100);
+                write.println("ADD " + orderid++ + " XLF SELL " + ((int) xlfP - 1) + " " + 100);
+            } else if (diff < -35) {
+                write.println("ADD " + orderid++ + " XLF BUY " + ((int) xlfP + 1) + " " + 100);
+                write.println("CONVERT " + orderid++ + " XLF SELL " + 100);
+                write.println("ADD " + orderid++ + " BOND SELL " + ((int) bondP - 1) + " " + 30);
+                write.println("ADD " + orderid++ + " GS SELL " + ((int) gsP - 1) + " " + 20);
+                write.println("ADD " + orderid++ + " MS SELL " + ((int) msP - 1) + " " + 30);
+                write.println("ADD " + orderid++ + " WFC SELL " + ((int) wfcP - 1) + " " + 20);
+            }
+
+        }
+
+    }
 
