@@ -43,7 +43,7 @@ class Configuration {
     }
 }
 
-public class Bot {
+public class AdrBot {
 
     public static int orderid = 0;
     public static int bonds = 0;
@@ -60,7 +60,7 @@ public class Bot {
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
            bot is connecting to the prod or test exchange. Be careful with this switch! */
-        Configuration config = new Configuration(false);
+        Configuration config = new Configuration(true);
         try {
             Socket skt = new Socket(config.exchange_name(), config.port());
             BufferedReader from_exchange = new BufferedReader(new InputStreamReader(skt.getInputStream()));
@@ -74,7 +74,7 @@ public class Bot {
             */
             to_exchange.println(("HELLO " + config.team_name).toUpperCase());
             String reply = from_exchange.readLine().trim();
-            System.err.printf("The exchange replied: %s\n", reply);
+            // System.err.printf("The exchange replied: %s\n", reply);
 
             //to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
             bonds = 0;
@@ -82,14 +82,15 @@ public class Bot {
                 getInfo(from_exchange);
                 if (open) {
                     tradeADR(to_exchange);
-                    tradeETF(to_exchange);
+                    // tradeETF(to_exchange);
                 } else {
                     rejoin(to_exchange, from_exchange);
                 }
 
                  reply = from_exchange.readLine().trim();
-                 Thread.sleep(2);
+                 Thread.sleep(5);
                  String[] line = reply.split(" ");
+                 System.out.println(line[0]);
                  if (line[0].equals("FILL") && line[3].equals("BUY")) {
                  bonds += Integer.parseInt(line[5]);
                  }
@@ -97,12 +98,14 @@ public class Bot {
                  bonds -= Integer.parseInt(line[5]);
                  }
                  line = reply.split(" ");
+                 System.out.println(line[0]);
                  if (bonds < 100) {
                  to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + 10);
                  }
                  if (bonds > -100) {
                  to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + 10);
                  }
+                 System.out.println(bonds);
                  String ans = from_exchange.readLine().trim();
                  System.err.printf("The exchange replied: %s\n", ans);
                 Thread.sleep(1);
@@ -180,11 +183,11 @@ public class Bot {
             write.println("ADD " + orderid++ + " VALE BUY " + ((int) ADR + 1) + " " + SIZE / 2 + 3);
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
             write.println("ADD " + orderid++ + " VALBZ SELL " + ((int) REG - 1) + " " + SIZE / 2 + 3);
-        } else if (diff <= -4) {
+	} else if (diff <= -4) {
              System.err.println("Buying regular / selling ADR");
-             write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 3);
+             write.println("ADD " + orderid++ + " VALBZ BUY " + ((int) REG + 1) + " " + SIZE / 2 + 1);
              write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
-             write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 3);
+             write.println("ADD " + orderid++ + " VALE SELL " + ((int) ADR - 1) + " " + SIZE / 2 + 1);
         }
     }
 
