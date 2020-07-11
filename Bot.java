@@ -5,11 +5,11 @@
 */
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.net.Socket;
+import java.util.ArrayList;
 
 class Configuration {
     String exchange_name;
@@ -74,41 +74,45 @@ public class Bot {
             */
             to_exchange.println(("HELLO " + config.team_name).toUpperCase());
             String reply = from_exchange.readLine().trim();
-            System.err.printf("The exchange replied: %s\n", reply);
-            Thread.sleep(5);
+            // System.err.printf("The exchange replied: %s\n", reply);
 
-            to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
-	    bonds = 25;
+            //to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
+            bonds = 0;
             while (true) {
+                getInfo();
+                tradeADR;
+                tradeETF;
 
-                reply = from_exchange.readLine().trim();
-                Thread.sleep(5);
-                String[] line = reply.split(" ");
-                System.out.println(line[0]);
-                if (line[0].equals("FILL") && line[3].equals("BUY")) {
-                    bonds += Integer.parseInt(line[5]);
-                }
-                if (line[0].equals("FILL") && line[3].equals("SELL")) {
-                    bonds -= Integer.parseInt(line[5]);
-                }
-		line = reply.split(" ");
-		System.out.println(line[0]);
-		if (line[0].equals("FILL") && line[3].equals("BUY")) {
-		    bonds += Integer.parseInt(line[5]);
-		}
-		if (line[0].equals("FILL") && line[3].equals("SELL")) {
-		    bonds -= Integer.parseInt(line[5]);
-		}
-                if (bonds < 100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + 10);
-		}
-		if (bonds > -100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + 10);
-                }
-		System.out.println(bonds);
-                String ans = from_exchange.readLine().trim();
-                System.err.printf("The exchange replied: %s\n", ans);
-                Thread.sleep(10);
+                /**
+                 reply = from_exchange.readLine().trim();
+                 Thread.sleep(5);
+                 String[] line = reply.split(" ");
+                 System.out.println(line[0]);
+                 if (line[0].equals("FILL") && line[3].equals("BUY")) {
+                 bonds += Integer.parseInt(line[5]);
+                 }
+                 if (line[0].equals("FILL") && line[3].equals("SELL")) {
+                 bonds -= Integer.parseInt(line[5]);
+                 }
+                 line = reply.split(" ");
+                 System.out.println(line[0]);
+                 if (line[0].equals("FILL") && line[3].equals("BUY")) {
+                 bonds += Integer.parseInt(line[5]);
+                 }
+                 if (line[0].equals("FILL") && line[3].equals("SELL")) {
+                 bonds -= Integer.parseInt(line[5]);
+                 }
+                 if (bonds < 100) {
+                 to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + 10);
+                 }
+                 if (bonds > -100) {
+                 to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + 10);
+                 }
+                 System.out.println(bonds);
+                 String ans = from_exchange.readLine().trim();
+                 System.err.printf("The exchange replied: %s\n", ans);
+                 */
+                Thread.sleep(1);
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -119,7 +123,7 @@ public class Bot {
     public static void getInfo(BufferedReader read) throws IOException, InterruptedException {
         System.err.println("Getting market info.");
         int counter = 0;
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1000; i++) {
             String line = read.readLine().trim();
             System.err.printf("Info: %s\n", line);
             String[] info = line.split(" ");
@@ -132,17 +136,17 @@ public class Bot {
                 continue;
             if (info[0].equals("TRADE")) {
                 if (info[1].equals("BOND"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    BOND.add(Integer.parseInt(info[2]));
                 else if (info[1].equals("VALBZ"))
                     VALBZ.add(Integer.parseInt(info[2]));
                 else if (info[1].equals("VALE"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    VALE.add(Integer.parseInt(info[2]));
                 else if (info[1].equals("GS"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    GS.add(Integer.parseInt(info[2]));
                 else if (info[1].equals("MS"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    MS.add(Integer.parseInt(info[2]));
                 else if (info[1].equals("WFC"))
-                    VALBZ.add(Integer.parseInt(info[2]));
+                    WFC.add(Integer.parseInt(info[2]));
             }
             Thread.sleep(1);
         }
