@@ -73,6 +73,7 @@ public class Bot {
                 reply = from_exchange.readLine().trim();
 		Thread.sleep(5);
 		String[] line = reply.split(" ");
+		System.out.println(line[0]);
 		if (line[0].equals("FILL") && line[3].equals("BUY")) {
 		    bonds += Integer.parseInt(line[5]);
 		}
@@ -80,7 +81,7 @@ public class Bot {
 		    bonds -= Integer.parseInt(line[5]);
 		}
                 if (bonds < 100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (29 - bonds));
+                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
                 } else if (bonds > -100) {
                     to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + (29 + bonds));
                 }
