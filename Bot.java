@@ -46,7 +46,7 @@ public class Bot {
 
     public static int orderid = 0;
     public static int bonds = 0;
-    public static open =true;
+    public static boolean open = true;
 
     List<Integer> BOND = new ArrayList<Integer>();
     List<Integer> VALBZ = new ArrayList<Integer>();
@@ -89,10 +89,10 @@ public class Bot {
 		    bonds -= Integer.parseInt(line[5]);
 		}
                 if (bonds < 100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
+                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + 10);
 		}
 		if (bonds > -100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + (29 + bonds));
+                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + 10);
                 }
 		System.out.println(bonds);
                 String ans = from_exchange.readLine().trim();
