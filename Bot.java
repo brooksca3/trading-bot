@@ -60,7 +60,7 @@ public class Bot {
     public static void main(String[] args) {
         /* The boolean passed to the Configuration constructor dictates whether or not the
            bot is connecting to the prod or test exchange. Be careful with this switch! */
-        Configuration config = new Configuration(false);
+        Configuration config = new Configuration(true);
         try {
             Socket skt = new Socket(config.exchange_name(), config.port());
             BufferedReader from_exchange = new BufferedReader(new InputStreamReader(skt.getInputStream()));
@@ -80,6 +80,8 @@ public class Bot {
             bonds = 0;
             while (true) {
                 getInfo(from_exchange);
+                tradeADR(to_exchange);
+                tradeETF(to_exchange);
                 if (open) {
                     tradeADR(to_exchange);
                     tradeETF(to_exchange);
@@ -87,7 +89,7 @@ public class Bot {
                     rejoin(to_exchange, from_exchange);
                 }
 
-                /**
+                /*
                  reply = from_exchange.readLine().trim();
                  Thread.sleep(5);
                  String[] line = reply.split(" ");
@@ -189,7 +191,7 @@ public class Bot {
             write.println("CONVERT " + orderid++ + " VALE SELL " + SIZE);
             write.println("ADD " + orderid++ + " VALBZ SELL " + (REG - 1) + " " + SIZE);
         } else if (diff <= -4) {
-            System.err.println("Buying ADR / selling regular");
+            System.err.println("Buying regular / selling ADR");
             write.println("ADD " + orderid++ + " VALBZ BUY " + (REG + 1) + " " + SIZE);
             write.println("CONVERT " + orderid++ + " VALE BUY " + SIZE);
             write.println("ADD " + orderid++ + " VALE SELL " + (ADR - 1) + " " + SIZE);
@@ -213,14 +215,14 @@ public class Bot {
         double wfcP = avg(WFC, SIZE);
         double diff = (10 * xlfP) - (3 * bondP + 2 * gsP + 3 * msP + 2 * wfcP);
 
-        if (diff > 102) {
+        if (diff > 30) {
             write.println("ADD " + orderid++ + " BOND BUY " + (bondP + 1) + " " + 30);
             write.println("ADD " + orderid++ + " GS BUY " + (gsP + 1) + " " + 20);
             write.println("ADD " + orderid++ + " MS BUY " + (msP + 1) + " " + 30);
             write.println("ADD " + orderid++ + " WFC BUY " + (wfcP + 1) + " " + 20);
             write.println("CONVERT " + orderid++ + " XLF BUY " + 100);
             write.println("ADD " + orderid++ + " XLF SELL " + (xlfP - 1) + " " + 100);
-        } else if (diff < -102) {
+        } else if (diff < -30) {
             write.println("ADD " + orderid++ + " XLF BUY " + (xlfP + 1) + " " + 100);
             write.println("CONVERT " + orderid++ + " XLF SELL " + 100);
             write.println("ADD " + orderid++ + " BOND SELL " + (bondP - 1) + " " + 30);
