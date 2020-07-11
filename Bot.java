@@ -80,8 +80,17 @@ public class Bot {
             bonds = 0;
             while (true) {
                 getInfo(from_exchange);
+<<<<<<< HEAD
                 tradeADR(to_exchange);
                 tradeETF(to_exchange);
+=======
+                if (open) {
+                    tradeADR();
+                    tradeETF();
+                } else {
+                    rejoin(to_exchange, from_exchange);
+                }
+>>>>>>> b45a9b52253bb20721175b1df39af88fc273dc97
 
                 /*
                  reply = from_exchange.readLine().trim();
@@ -161,6 +170,15 @@ public class Bot {
         return (sum / lastN);
     }
 
+    // waiting for market to open
+    public static void rejoin(PrintWriter write, BufferReader read) {
+        while (!open) {
+            write.println("HELLO PROSPECTAVENUE");
+            if (read.readLine().trim().split(" ")[0].equals("HELLO"))
+                open = true;
+        }
+    }
+
 
     // adr pair trading
     public static void tradeADR(PrintWriter write) {
@@ -187,7 +205,11 @@ public class Bot {
 
     public static void tradeETF(PrintWriter write) {
         int SIZE = 20;
+<<<<<<< HEAD
 	if (WFC.size() < SIZE || BOND.size() < SIZE)
+=======
+        if (WFC.size() < SIZE || BOND.size() < SIZE)
+>>>>>>> b45a9b52253bb20721175b1df39af88fc273dc97
             return;
         if (GS.size() < SIZE || MS.size() < SIZE)
             return;
