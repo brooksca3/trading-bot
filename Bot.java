@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 class Configuration {
     String exchange_name;
@@ -16,7 +17,7 @@ class Configuration {
        1 = slow
        2 = empty
     */
-    final Integer test_exchange_kind = 1;
+    final Integer test_exchange_kind = 0;
     /* replace REPLACEME with your team name! */
     final String team_name = "PROSPECTAVENUE";
 
@@ -64,17 +65,28 @@ public class Bot {
             to_exchange.println(("HELLO " + config.team_name).toUpperCase());
             String reply = from_exchange.readLine().trim();
             System.err.printf("The exchange replied: %s\n", reply);
+	    Thread.sleep(5);
+	    
+            to_exchange.println("ADD " + orderid++ + " BOND BUY 999 25");
             while (true) {
+
+                reply = from_exchange.readLine().trim();
+		Thread.sleep(5);
+		String[] line = reply.split(" ");
+		if (line[0].equals("FILL") && line[3].equals("BUY")) {
+		    bonds += Integer.parseInt(line[5]);
+		}
+		if (line[0].equals("FILL") && line[3].equals("SELL")) {
+		    bonds -= Integer.parseInt(line[5]);
+		}
                 if (bonds < 100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (100 - bonds));
-                    bonds += 100;
+                    to_exchange.println("ADD " + orderid++ + " BOND BUY 999 " + (29 - bonds));
                 } else if (bonds > -100) {
-                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1001 " + (bonds));
-                    bonds -= 100;
+                    to_exchange.println("ADD " + orderid++ + " BOND SELL 1000 " + (29 + bonds));
                 }
                 String ans = from_exchange.readLine().trim();
                 System.err.printf("The exchange replied: %s\n", ans);
-                Thread.sleep(1);
+                Thread.sleep(10);
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
